@@ -1,41 +1,43 @@
 package transit
 
 import com.cognitect.transit.{ArrayReader, ArrayReadHandler}
-import scala.collection.immutable.HashSet
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.{immutable, mutable}
 
 object ReadHandlers {
 
-  object SetReadHandler extends ArrayReadHandler {
-    def arrayReader() = new ArrayReader {
-      def init: AnyRef = new HashSet[AnyRef]
+  type GestationalSet = mutable.HashSet[Any]
 
-      def init(size: Int): AnyRef = init
+  object SetReadHandler extends ArrayReadHandler[GestationalSet, Set[Any], Any, Set[Any]] {
+    def arrayReader() = new ArrayReader[GestationalSet, Set[Any], Any] {
+      def init: GestationalSet = mutable.HashSet.empty[Any]
 
-      def add(set: AnyRef, item: AnyRef): AnyRef = {
-        set.asInstanceOf[HashSet[AnyRef]] + item
+      def init(size: Int): GestationalSet = init
+
+      def add(set: GestationalSet, item: Any): GestationalSet = {
+        set += item
       }
 
-      def complete(set: AnyRef): AnyRef = set
+      def complete(set: GestationalSet): Set[Any] = set.toSet
     }
 
-    def fromRep(rep: AnyRef) = rep
+    def fromRep(rep: Set[Any]) = rep
   }
 
-  object SeqReadHandler extends ArrayReadHandler {
-    def arrayReader() = new ArrayReader {
-      def init: AnyRef = ArrayBuffer[AnyRef]()
+  type GestationalSeq = mutable.ArrayBuffer[Any]
 
-      def init(size: Int): AnyRef = new ArrayBuffer[AnyRef](size)
+  object SeqReadHandler extends ArrayReadHandler[GestationalSeq, immutable.Seq[Any], Any, immutable.Seq[Any]] {
+    def arrayReader() = new ArrayReader[GestationalSeq, immutable.Seq[Any], Any] {
+      def init: GestationalSeq = mutable.ArrayBuffer.empty[Any]
 
-      def add(buffer: AnyRef, item: AnyRef): AnyRef = {
-        buffer.asInstanceOf[ArrayBuffer[AnyRef]] += item
-        buffer
+      def init(size: Int): GestationalSeq = new mutable.ArrayBuffer[Any](size)
+
+      def add(buffer: GestationalSeq, item: Any): GestationalSeq = {
+        buffer += item
       }
 
-      def complete(buffer: AnyRef): AnyRef = buffer
+      def complete(buffer: GestationalSeq): immutable.Seq[Any] = buffer.to[immutable.Seq]
     }
 
-    def fromRep(rep: AnyRef) = rep
+    def fromRep(rep: immutable.Seq[Any]) = rep
   }
 }

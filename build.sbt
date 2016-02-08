@@ -1,5 +1,8 @@
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.7"
 
-libraryDependencies += "com.cognitect" % "transit-java" % "0.8.234"
+organization := "com.github.cb372"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test"
+libraryDependencies ++= Seq(
+  "com.cognitect" % "transit-java" % "0.8.311",
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+)

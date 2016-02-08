@@ -15,17 +15,17 @@ package object transit {
   case object Json extends Format
   case object JsonVerbose extends Format
 
-  def writer(out: OutputStream, format: Format)(implicit exec: ExecutionContext): Writer = {
-    val customWriteHandlers = Map[Class[_], WriteHandler](
+  def writer[T](out: OutputStream, format: Format)(implicit exec: ExecutionContext): Writer[T] = {
+    val customWriteHandlers = Map[Class[_], WriteHandler[_, _]](
       classOf[Set[_]] -> SetWriteHandler,
       classOf[Seq[_]] -> SeqWriteHandler
     ).asJava
-    val underlying = TransitFactory.writer(convertFormat(format), out, customWriteHandlers)
+    val underlying = TransitFactory.writer[T](convertFormat(format), out, customWriteHandlers)
     new Writer(underlying)
   }
 
   def reader(in: InputStream, format: Format)(implicit exec: ExecutionContext): Reader = {
-    val customReadHandlers = Map[String, ReadHandler](
+    val customReadHandlers = Map[String, ReadHandler[_, _]](
       "set" -> SetReadHandler,
       "list" -> SeqReadHandler
     ).asJava

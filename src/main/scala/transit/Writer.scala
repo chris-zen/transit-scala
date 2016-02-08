@@ -1,10 +1,10 @@
 package transit
 
-import com.cognitect.transit.{Writer => TWriter}
+import com.cognitect.transit
 import scala.concurrent.{Future, ExecutionContext, blocking}
 
-class Writer(underlying: TWriter)(implicit val exec: ExecutionContext) {
+class Writer[T](underlying: transit.Writer[T])(implicit val exec: ExecutionContext) {
 
-  def write(a: Any): Future[Unit] = Future(blocking(underlying.write(a)))
+  def write(a: T): Future[Unit] = Future(blocking(underlying.write(a)))
 
 }
